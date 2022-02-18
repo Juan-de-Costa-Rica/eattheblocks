@@ -1,129 +1,101 @@
 pragma solidity ^0.8.0;
+//SPDX-License-Identifier: UNLICENSED
 
 /**
  * DAO contract:
- * 1. Collects investors money (ether) & allocate shares
- * 2. Keep track of investor contributions with shares
- * 3. Allow investors to transfer shares
- * 4. allow investment proposals to be created and voted
- * 5. execute successful investment proposals (i.e send money)
+ * 1. Collects contributions in ETH during initial contribution period.
+ * 2. Allows contributors to transfer shares at any time.
+ * 3. Allows contributions to be redeemed during initial contribution period.
+ * 4. Allows investment proposals to be created by contributors.
+ * 5. Allows proposals to be voted on by contributors during voting period.
+ * 6. Executes successful investment proposals.
  */
 
 contract DAO {
   struct Proposal {
-    uint id;
     string name;
     uint amount;
     address payable recipient;
-    uint votes;
-    uint end;
+    uint totalVotes;
+    uint endVotingPeriod;
     bool executed;
+    mapping(address => bool) votes;
   }
 
-  mapping(address => bool) public investors;
-  mapping(address => uint) public shares;
-  mapping(address => mapping(uint => bool)) public votes;
-  mapping(uint => Proposal) public proposals;
-  uint public totalShares;
-  uint public availableFunds;
-  uint public contributionEnd;
-  uint public nextProposalId;
-  uint public voteTime;
-  uint public quorum;
-  address public admin;
+  mapping(address => uint) public $shares;
+  mapping(uint => Proposal) public $proposals;
+  uint public $totalShares;
+  uint public $availableETH;
+  uint public $endContributionPeriod;
+  uint public $nextProposalId;
+  uint public $quorum;
+  address public $admin;
 
   constructor(
-    uint contributionTime, 
-    uint _voteTime,
-    uint _quorum) {
+    uint _contributionTime, 
+    uint _quorum
+  ) {
     require(_quorum > 0 && _quorum < 100, 'quorum must be between 0 and 100');
-    contributionEnd = block.timestamp + contributionTime;
-    voteTime = _voteTime;
-    quorum = _quorum;
-    admin = msg.sender;
+    $endContributionPeriod = block.timestamp + _contributionTime;
+    $quorum = _quorum;
+    $admin = msg.sender;
   }
 
   function contribute() payable external {
-    require(block.timestamp < contributionEnd, 'cannot contribute after contributionEnd');
-    investors[msg.sender] = true;
-    shares[msg.sender] += msg.value;
-    totalShares += msg.value;
-    availableFunds += msg.value;
+    require(block.timestamp < $endContributionPeriod, 'Contribution Period Over');
+    $shares[msg.sender] += msg.value;
+    $totalShares += msg.value;
+    $availableETH += msg.value;
   }
 
-  function redeemShare(uint amount) external {
-    require(shares[msg.sender] >= amount, 'not enough shares');
-    require(availableFunds >= amount, 'not enough available funds');
-    shares[msg.sender] -= amount;
-    availableFunds -= amount;
-    payable(msg.sender).transfer(amount);
+  function redeemShare(uint _amount) external {
+    require(block.timestamp < $endContributionPeriod, 'Contribution Period Over');
+    require($shares[msg.sender] >= _amount, 'Not Enough Shares');
+    require($availableETH >= _amount, 'Not Enough Available ETH');
+    $shares[msg.sender] -= _amount;
+    $availableETH -= _amount;
+    payable(msg.sender).transfer(_amount);
   }
-    
-  function transferShare(uint amount, address to) external {
-    require(shares[msg.sender] >= amount, 'not enough shares');
-    shares[msg.sender] -= amount;
-    shares[to] += amount;
-    investors[to] = true;
+
+  function transferShare(uint _amount, address _to) external {
+    require($shares[msg.sender] >= _amount, 'Not Enough Shares');
+    $shares[msg.sender] -= _amount;
+    $shares[_to] += _amount;
   }
 
   function createProposal(
-    string memory name,
-    uint amount,
-    address payable recipient) 
-    public 
-    onlyInvestors() {
-    require(availableFunds >= amount, 'amount too big');
-    proposals[nextProposalId] = Proposal(
-      nextProposalId,
-      name,
-      amount,
-      recipient,
-      0,
-      block.timestamp + voteTime,
-      false
-    );
-    availableFunds -= amount;
-    nextProposalId++;
+    string memory _name,
+    uint _amount,
+    address payable _recipient,
+    uint _voteTime
+  ) public {
+    require($shares[msg.sender] > 0, 'Must Have Shares');
+    require($availableETH >= _amount, 'Amount Too Big');
+    Proposal storage proposal = $proposals[$nextProposalId];
+    proposal.name = _name;
+    proposal.amount = _amount;
+    proposal.recipient = _recipient;
+    proposal.endVotingPeriod = block.timestamp + _voteTime;
+    $availableETH -= _amount;
+    $nextProposalId++;
   }
 
-  function vote(uint proposalId) external onlyInvestors() {
-    Proposal storage proposal = proposals[proposalId];
-    require(votes[msg.sender][proposalId] == false, 'investor can only vote once for a proposal');
-    require(block.timestamp < proposal.end, 'can only vote until proposal end date');
-    votes[msg.sender][proposalId] = true;
-    proposal.votes += shares[msg.sender];
+  function vote(uint _proposalId) external {
+    require($shares[msg.sender] > 0, 'Must Have Shares');
+    Proposal storage proposal = $proposals[_proposalId];
+    require(proposal.votes[msg.sender] == false, 'Already Voted For Proposal');
+    require(block.timestamp < proposal.endVotingPeriod, 'Voting Period Over');
+    proposal.votes[msg.sender] = true;
+    proposal.totalVotes += $shares[msg.sender];
   }
 
-  function executeProposal(uint proposalId) external onlyAdmin() {
-    Proposal storage proposal = proposals[proposalId];
-    require(block.timestamp >= proposal.end, 'cannot execute proposal before end date');
-    require(proposal.executed == false, 'cannot execute proposal already executed');
-    require((proposal.votes / totalShares) * 100 >= quorum, 'cannot execute proposal with votes # below quorum');
-    _transferEther(proposal.amount, proposal.recipient);
-  }
-
-  function withdrawEther(uint amount, address payable to) external onlyAdmin() {
-    _transferEther(amount, to);
-  }
-  
-  function _transferEther(uint amount, address payable to) internal {
-    require(amount <= availableFunds, 'not enough availableFunds');
-    availableFunds -= amount;
-    to.transfer(amount);
-  }
-
-  //For ether returns of proposal investments
-  receive() external payable {
-    availableFunds += msg.value;
-  }
-
-  modifier onlyInvestors() {
-    require(investors[msg.sender] == true, 'only investors');
-    _;
-  }
-
-  modifier onlyAdmin() {
-    require(msg.sender == admin, 'only admin');
-    _;
+  function executeProposal(uint _proposalId) external {
+    require(msg.sender == $admin, 'Only Admin');
+    Proposal storage proposal = $proposals[_proposalId];
+    require(block.timestamp > proposal.endVotingPeriod, 'Voting Period Not Over');
+    require(proposal.executed == false, 'Already Executed');
+    require(proposal.totalVotes*(10**2)/$totalShares >= $quorum, 'No Quorum');
+    $availableETH -= proposal.amount;
+    payable(proposal.recipient).transfer(proposal.amount);
   }
 }
