@@ -8,7 +8,7 @@ contract Dex {
         address tokenAddress;
     }
 
-    mapping(bytes32 => Token) public tokenMap;
+    mapping(bytes32 => Token) public tokens;
     bytes32[] public tokenList;
     address public admin;
 
@@ -20,7 +20,7 @@ contract Dex {
         bytes32 ticker,
         address tokenAddress
     ) external onlyAdmin {
-        tokenMap[ticker] = Token(ticker, tokenAddress);
+        tokens[ticker] = Token(ticker, tokenAddress);
         tokenList.push(ticker);
     }
 
