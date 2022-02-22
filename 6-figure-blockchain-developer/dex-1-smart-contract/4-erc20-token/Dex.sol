@@ -4,7 +4,7 @@ pragma solidity >=0.8.12;
 
 contract Dex {
     struct Token {
-        bytes32 ticker;  //? not neccisary?
+        bytes32 ticker;
         address tokenAddress;
     }
 
