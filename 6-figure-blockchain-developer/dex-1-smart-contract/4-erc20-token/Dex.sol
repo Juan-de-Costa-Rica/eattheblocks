@@ -10,7 +10,6 @@ contract Dex {
 
     mapping(bytes32 => Token) public tokenMap;
     bytes32[] public tokenList;
-    mapping(address => mapping(bytes32 => uint)) public traderBalances;
     address public admin;
 
     constructor() {
