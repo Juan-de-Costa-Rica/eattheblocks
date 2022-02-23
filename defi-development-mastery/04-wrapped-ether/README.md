@@ -43,5 +43,3 @@
   - From: `msg.sender.transfer(_amount);`
   
   - To: `payable(msg.sender).transfer(_amount);`
-
-
