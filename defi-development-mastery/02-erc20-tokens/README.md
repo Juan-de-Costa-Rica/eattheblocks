@@ -32,20 +32,10 @@
 
 ---
 
-### Updates
+### Contract Updates
 
-- **TokenOpenZeppelin.sol**
+- Add SPDX-License-Identifier
 
-  - Add SPDX-License-Identifier
+- Update pragma solidity version
 
-  - Update pragma solidity version
-
-  - Solidity style guide
-
-- **ContractA.sol**
-
-  - Add SPDX-License-Identifier
-
-  - Update pragma solidity version
-
-  - Solidity style guide
+- Solidity style guide

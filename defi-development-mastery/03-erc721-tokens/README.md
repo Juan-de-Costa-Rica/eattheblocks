@@ -32,24 +32,16 @@
 
 ---
 
-### Updates
+### Contract Updates
 
-- **ERC721OpenZeppelin.sol**
+- Add SPDX-License-Identifier
 
-  - Add SPDX-License-Identifier
+- Update pragma solidity version
 
-  - Update pragma solidity version
-
-  - Solidity style guide
+- Solidity style guide
 
 - **ContractA.sol**
-
-  - Add SPDX-License-Identifier
-
-  - Update pragma solidity version
 
   - OpenZeppelin ERC721Holder.sol import file path
 
     - `import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";`
-
-  - Solidity style guide
