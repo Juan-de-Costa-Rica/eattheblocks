@@ -1,6 +1,6 @@
 # DeFi Development Mastery
 
-**Updated for Solidity 0.8**
+- **Updated for Solidity 0.8**
 
 ###
 
