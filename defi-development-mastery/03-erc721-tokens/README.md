@@ -1,6 +1,4 @@
-# 7. ERC721 Tokens
-
----
+# 3. ERC721 Tokens
 
 ### Setup
 
