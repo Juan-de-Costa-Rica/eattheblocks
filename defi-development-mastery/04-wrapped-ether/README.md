@@ -1,10 +1,10 @@
-# 3. ERC721 Tokens
+# 4. Wrapped Ether
 
 ### Setup
 
 - `truffle init`
 
-- _Edit truffle-config.js_
+- *Edit truffle-config.js*
   
   - ```javascript
       // Configure your compilers
@@ -26,9 +26,7 @@
 
 - `npm install @openzeppelin/contracts`
 
-- `touch contracts/ERC721OpenZeppelin.sol`
-
-- `touch contracts/ContractA.sol`
+- `touch contracts/Weth.sol`
 
 ---
 
@@ -40,8 +38,10 @@
 
 - Solidity style guide
 
-- **ContractA.sol**
+- *"send" and "transfer" are only available for objects of type "address payable", not "address"*
   
-  - OpenZeppelin ERC721Holder.sol import file path
-    
-    `import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";`
+  - From: `msg.sender.transfer(_amount);`
+  
+  - To: `payable(msg.sender).transfer(_amount);`
+
+
