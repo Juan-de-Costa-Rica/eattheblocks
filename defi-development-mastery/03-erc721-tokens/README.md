@@ -1,4 +1,4 @@
-# 2. ERC20 Tokens
+# 7. ERC721 Tokens
 
 ---
 
@@ -7,7 +7,7 @@
 - `truffle init`
 
 - _Edit truffle-config.js_
-  
+
   - ```javascript
       // Configure your compilers
       compilers: {
@@ -15,7 +15,7 @@
           version: "0.8.12", // Fetch exact version from solc-bin
         },
     ```
-  
+
   - ```javascript
         development: {
           host: "127.0.0.1", // Localhost (default: none)
@@ -28,7 +28,7 @@
 
 - `npm install @openzeppelin/contracts`
 
-- `touch contracts/TokenOpenZeppelin.sol`
+- `touch contracts/ERC721OpenZeppelin.sol`
 
 - `touch contracts/ContractA.sol`
 
@@ -36,18 +36,22 @@
 
 ### Updates
 
-- **TokenOpenZeppelin.sol**
-  
+- **ERC721OpenZeppelin.sol**
+
   - Add SPDX-License-Identifier
-  
+
   - Update pragma solidity version
-  
+
   - Solidity style guide
 
 - **ContractA.sol**
-  
+
   - Add SPDX-License-Identifier
-  
+
   - Update pragma solidity version
-  
+
+  - OpenZeppelin ERC721Holder.sol import file path
+
+    - `import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";`
+
   - Solidity style guide
