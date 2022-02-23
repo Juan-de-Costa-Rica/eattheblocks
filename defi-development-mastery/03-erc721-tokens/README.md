@@ -43,5 +43,4 @@
 - **ContractA.sol**
 
   - OpenZeppelin ERC721Holder.sol import file path
-
-    - `import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";`
+    `import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";`
