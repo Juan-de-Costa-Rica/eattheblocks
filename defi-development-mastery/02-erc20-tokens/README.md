@@ -6,7 +6,7 @@
 
 - `truffle init`
 
-- *Edit truffle-config.js*
+- _Edit truffle-config.js_
   
   - ```javascript
       // Configure your compilers
@@ -23,8 +23,6 @@
           network_id: "*", // Any network (default: none)
         },
     ```
-  
-  - 
 
 - `npm init -y`
 
