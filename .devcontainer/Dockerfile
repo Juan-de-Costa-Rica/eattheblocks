@@ -15,7 +15,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 RUN apt install -y nodejs
 
 # Install Truffle Suite
-RUN npm install -g truffle
+RUN npm install -g truffle@5.4.33
 
 # Install Ganache
-RUN npm install -g ganache-cli
+# TODO: Upgrade to ganache v7 when this issue is addressed
+# https://github.com/trufflesuite/ganache/issues/2489
+RUN npm install -g ganache-cli@6.12.2
+
+#Install OpenZeppelin
+RUN npm install -g @openzeppelin/contracts@4.5.0
+RUN npm install -g @openzeppelin/test-helpers@0.5.15
