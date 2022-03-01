@@ -14,7 +14,7 @@
 
 - Truffle v5.4.33 (core: 5.4.33)
 
-- Ganache v7.0.1
+- Ganache v6.12.2
 
 - Node v14.19.0
 
