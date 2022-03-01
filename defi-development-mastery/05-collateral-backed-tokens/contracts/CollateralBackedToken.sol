@@ -12,7 +12,7 @@ contract CollateralBackedToken is ERC20 {
         collateral = IERC20(_collateral);
     }
 
-    function deposit(uint256 _collateralAmount) external payable {
+    function deposit(uint256 _collateralAmount) external {
         collateral.transferFrom(msg.sender, address(this), _collateralAmount);
         _mint(msg.sender, _collateralAmount * price);
     }
