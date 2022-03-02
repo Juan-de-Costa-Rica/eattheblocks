@@ -1,4 +1,4 @@
-# 4. Collateral Backed Tokens
+# 5. Collateral Backed Tokens
 
 ### Setup
 
